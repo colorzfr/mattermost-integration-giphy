@@ -29,12 +29,16 @@ spec:
         - containerPort: 5000
         resources:
           limits:
-            cpu: "0.1"
+            cpu: 20m
+            memory: 32Mi
+
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: mattermost-integration-giphy
+  labels:
+    app: mattermost-integration-giphy
 spec:
   type: ClusterIP
   selector:
@@ -43,13 +47,16 @@ spec:
   - port: 80
     protocol: TCP
     targetPort: 5000
+
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: mattermost-integration-giphy
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
+    kubernetes.io/tls-acme: "true"
+  labels:
+    app: mattermost-integration-giphy
 spec:
   backend:
     serviceName: mattermost-integration-giphy
